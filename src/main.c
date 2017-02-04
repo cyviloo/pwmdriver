@@ -14,12 +14,10 @@
 #define INPUT_ENSURE_MS		1
 
 
-static uint8_t chk_inp1();
-static uint8_t chk_inp2();
-static uint8_t chk_inp3();
-static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel);
-static void slow_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel,
+static void fast_react_on_input(volatile uint8_t * pwm_channel, uint8_t input_number);
+static void slow_react_on_input(volatile uint8_t * pwm_channel,	uint8_t input_number,
 		uint8_t every_which_step);
+static uint8_t (*input_activation_function)(uint8_t);
 
 
 int main() {
@@ -30,14 +28,16 @@ int main() {
 	// init inputs
 	inputs_init();
 
+	// register inputs activation function
+	input_activation_function = isActivated;
+
 	// enable global interrupts
 	sei();
 
 	while(1) {
-		fast_react_on_input(chk_inp1, &pwms[0]);
-		fast_react_on_input(chk_inp2, &pwms[1]);
-
-		slow_react_on_input(chk_inp3, &pwms[2], 5);
+		fast_react_on_input(&pwms[0], 0);
+		fast_react_on_input(&pwms[1], 1);
+		slow_react_on_input(&pwms[2], 2, 5);
 
 		_delay_ms(PWM_STEP_DELAY_MS);
 	}
@@ -50,16 +50,13 @@ int main() {
 
 // additional functions
 
-static uint8_t chk_inp1() {
+static uint8_t chk_inp(uint8_t input_number) {
 	static uint8_t pressed;
-	if(I0A) {
+	if(input_activation_function(input_number)) {
 		if(!pressed) {
 			pressed = 1;
 			_delay_ms(INPUT_ENSURE_MS);
-			if(I0A) return pressed;
-		}
-		else {
-			return pressed;
+			if(input_activation_function(input_number)) return pressed;
 		}
 	}
 	else {
@@ -68,60 +65,28 @@ static uint8_t chk_inp1() {
 	return pressed;
 }
 
-static uint8_t chk_inp2() {
-	static uint8_t pressed;
-	if(I1A) {
-		if(!pressed) {
-			pressed = 1;
-			_delay_ms(INPUT_ENSURE_MS);
-			if(I1A) return pressed;
-		}
-		else {
-			return pressed;
+static void fast_react_on_input(volatile uint8_t * pwm_channel, uint8_t input_number) {
+	uint8_t buf = *pwm_channel;
+
+	if(chk_inp(input_number)) {
+		if(buf < 0xFF) {
+			++buf;
 		}
 	}
 	else {
-		pressed = 0;
+		if(buf > 0)
+			--buf;
 	}
-	return pressed;
+
+	*pwm_channel = buf;
 }
 
-static uint8_t chk_inp3() {
-	static uint8_t pressed;
-	if(I2A) {
-		if(!pressed) {
-			pressed = 1;
-			_delay_ms(INPUT_ENSURE_MS);
-			if(I2A) return pressed;
-		}
-		else {
-			return pressed;
-		}
-	}
-	else {
-		pressed = 0;
-	}
-	return pressed;
-}
-
-static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) {
-
-	if(f()) {
-		if(*pwm_channel < 0xFF)
-			++(*pwm_channel);
-	}
-	else {
-		if(*pwm_channel > 0)
-			--(*pwm_channel);
-	}
-}
-
-static void slow_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel,
-		uint8_t every_which_step) {
+static void slow_react_on_input(volatile uint8_t * pwm_channel,
+		uint8_t input_number, uint8_t every_which_step) {
 	static uint8_t step;
 
 	if( !(step % every_which_step) )
-		fast_react_on_input(f, pwm_channel);
+		fast_react_on_input(pwm_channel, input_number);
 
 	++step;
 }

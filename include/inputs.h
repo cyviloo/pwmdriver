@@ -98,7 +98,17 @@
 #endif
 
 // functions
+
+/*
+ * initialization
+ */
 void inputs_init();
+
+
+/*
+ * get state of a particular input
+ */
+uint8_t isActivated(uint8_t number);
 
 
 #endif /* INCLUDE_INPUTS_H_ */

@@ -9,6 +9,7 @@
 
 #include "../include/inputs.h"
 
+
 void inputs_init() {
 	DDR(I0_CH) &= ~(1 << I0_NO);
 	I0H;
@@ -60,3 +61,97 @@ void inputs_init() {
 }
 
 
+
+static uint8_t chkI0() {
+	return I0A;
+}
+
+#if PWM_CNT > 1
+static uint8_t chkI1() {
+	return I1A;
+}
+#endif
+
+#if PWM_CNT > 2
+static uint8_t chkI2() {
+	return I2A;
+}
+#endif
+
+#if PWM_CNT > 3
+static uint8_t chkI3() {
+	return I3A;
+}
+#endif
+
+#if PWM_CNT > 4
+static uint8_t chkI4() {
+	return I4A;
+}
+#endif
+
+#if PWM_CNT > 5
+static uint8_t chkI5() {
+	return I5A;
+}
+#endif
+
+#if PWM_CNT > 6
+static uint8_t chkI6() {
+	return I6A;
+}
+#endif
+
+#if PWM_CNT > 7
+static uint8_t chkI7() {
+	return I7A;
+}
+#endif
+
+#if PWM_CNT > 8
+static uint8_t chkI8() {
+	return I8A;
+}
+#endif
+
+#if PWM_CNT > 9
+static uint8_t chkI9() {
+	return I9A;
+}
+#endif
+
+
+uint8_t isActivated(uint8_t number) {
+	static uint8_t (*funcs[PWM_CNT])() = {
+			chkI0,
+#if PWM_CNT > 1
+			chkI1,
+#endif
+#if PWM_CNT > 2
+			chkI2,
+#endif
+#if PWM_CNT > 3
+			chkI3,
+#endif
+#if PWM_CNT > 4
+			chkI4,
+#endif
+#if PWM_CNT > 5
+			chkI5,
+#endif
+#if PWM_CNT > 6
+			chkI6,
+#endif
+#if PWM_CNT > 7
+			chkI7,
+#endif
+#if PWM_CNT > 8
+			chkI8,
+#endif
+#if PWM_CNT > 9
+			chkI9
+#endif
+	};
+
+	return funcs[number]();
+}
