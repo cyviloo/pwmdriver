@@ -7,7 +7,10 @@
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "../include/inputs.h"
 #include "../include/pwms.h"
+
+
 
 
 int main() {
@@ -15,19 +18,15 @@ int main() {
 	// init pwm with prescaler = 8
 	pwms_init(8, 2);
 
+	// init inputs
+	inputs_init();
+
 	// enable global interrupts
 	sei();
 
 	while(1) {
-		uint8_t j = 0;
-		for(; j < 0xFF; ++j) {
-			_delay_ms(7);
-			pwms[0] = j;
-		}
-		for(; j > 0x00; --j) {
-			_delay_ms(7);
-			pwms[0] = j;
-		}
+
+
 	}
 
 	return 0;
