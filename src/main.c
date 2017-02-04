@@ -16,7 +16,10 @@
 
 static uint8_t chk_inp1();
 static uint8_t chk_inp2();
+static uint8_t chk_inp3();
 static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel);
+static void slow_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel,
+		uint8_t every_which_step);
 
 
 int main() {
@@ -34,6 +37,7 @@ int main() {
 		fast_react_on_input(chk_inp1, &pwms[0]);
 		fast_react_on_input(chk_inp2, &pwms[1]);
 
+		slow_react_on_input(chk_inp3, &pwms[2], 5);
 
 		_delay_ms(PWM_STEP_DELAY_MS);
 	}
@@ -82,6 +86,24 @@ static uint8_t chk_inp2() {
 	return pressed;
 }
 
+static uint8_t chk_inp3() {
+	static uint8_t pressed;
+	if(I2A) {
+		if(!pressed) {
+			pressed = 1;
+			_delay_ms(INPUT_ENSURE_MS);
+			if(I2A) return pressed;
+		}
+		else {
+			return pressed;
+		}
+	}
+	else {
+		pressed = 0;
+	}
+	return pressed;
+}
+
 static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) {
 
 	if(f()) {
@@ -92,4 +114,14 @@ static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) 
 		if(*pwm_channel > 0)
 			--(*pwm_channel);
 	}
+}
+
+static void slow_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel,
+		uint8_t every_which_step) {
+	static uint8_t step;
+
+	if( !(step % every_which_step) )
+		fast_react_on_input(f, pwm_channel);
+
+	++step;
 }
