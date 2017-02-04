@@ -16,7 +16,7 @@
 
 static uint8_t chk_inp1();
 static uint8_t chk_inp2();
-static void react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel);
+static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel);
 
 
 int main() {
@@ -31,8 +31,8 @@ int main() {
 	sei();
 
 	while(1) {
-		react_on_input(chk_inp1, &pwms[0]);
-		react_on_input(chk_inp2, &pwms[1]);
+		fast_react_on_input(chk_inp1, &pwms[0]);
+		fast_react_on_input(chk_inp2, &pwms[1]);
 
 
 		_delay_ms(PWM_STEP_DELAY_MS);
@@ -46,7 +46,7 @@ int main() {
 
 // additional functions
 
-static uint8_t chk_inp1(uint8_t (*f)()) {
+static uint8_t chk_inp1() {
 	static uint8_t pressed;
 	if(I0A) {
 		if(!pressed) {
@@ -82,7 +82,7 @@ static uint8_t chk_inp2() {
 	return pressed;
 }
 
-static void react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) {
+static void fast_react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) {
 
 	if(f()) {
 		if(*pwm_channel < 0xFF)
