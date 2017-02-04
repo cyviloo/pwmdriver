@@ -10,10 +10,43 @@
 #include "../include/inputs.h"
 #include "../include/pwms.h"
 
-#define PWM_STEP_DELAY_MS	1
+#define PWM_STEP_DELAY_MS	2
 #define INPUT_ENSURE_MS		1
 
-static uint8_t chk_inp0() {
+
+static uint8_t chk_inp1();
+static uint8_t chk_inp2();
+static void react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel);
+
+
+int main() {
+
+	// init pwm with prescaler = 8
+	pwms_init(8, 2);
+
+	// init inputs
+	inputs_init();
+
+	// enable global interrupts
+	sei();
+
+	while(1) {
+		react_on_input(chk_inp1, &pwms[0]);
+		react_on_input(chk_inp2, &pwms[1]);
+
+
+		_delay_ms(PWM_STEP_DELAY_MS);
+	}
+
+	return 0;
+}
+
+
+
+
+// additional functions
+
+static uint8_t chk_inp1(uint8_t (*f)()) {
 	static uint8_t pressed;
 	if(I0A) {
 		if(!pressed) {
@@ -31,31 +64,32 @@ static uint8_t chk_inp0() {
 	return pressed;
 }
 
-
-int main() {
-
-	// init pwm with prescaler = 8
-	pwms_init(8, 2);
-
-	// init inputs
-	inputs_init();
-
-	// enable global interrupts
-	sei();
-
-	while(1) {
-
-		if(chk_inp0()) {
-			if(pwms[0] < 0xFF)
-				pwms[0]++;
+static uint8_t chk_inp2() {
+	static uint8_t pressed;
+	if(I1A) {
+		if(!pressed) {
+			pressed = 1;
+			_delay_ms(INPUT_ENSURE_MS);
+			if(I1A) return pressed;
 		}
 		else {
-			if(pwms[0] > 0)
-				pwms[0]--;
+			return pressed;
 		}
-
-		_delay_ms(PWM_STEP_DELAY_MS);
 	}
+	else {
+		pressed = 0;
+	}
+	return pressed;
+}
 
-	return 0;
+static void react_on_input(uint8_t (*f)(), volatile uint8_t * pwm_channel) {
+
+	if(f()) {
+		if(*pwm_channel < 0xFF)
+			++(*pwm_channel);
+	}
+	else {
+		if(*pwm_channel > 0)
+			--(*pwm_channel);
+	}
 }
