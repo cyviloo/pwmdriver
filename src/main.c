@@ -14,8 +14,8 @@
 #define INPUT_ENSURE_MS		1
 
 
-static void fast_react_on_input(volatile uint8_t * pwm_channel, uint8_t input_number);
-static void slow_react_on_input(volatile uint8_t * pwm_channel,	uint8_t input_number,
+static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number);
+static void slow_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number,
 		uint8_t every_which_step);
 static uint8_t (*input_activation_function)(uint8_t);
 
@@ -23,7 +23,7 @@ static uint8_t (*input_activation_function)(uint8_t);
 int main() {
 
 	// init pwm with prescaler = 8
-	pwms_init(8, 2);
+	pwms_init(8, 5);
 
 	// init inputs
 	inputs_init();
@@ -65,11 +65,11 @@ static uint8_t chk_inp(uint8_t input_number) {
 	return pressed;
 }
 
-static void fast_react_on_input(volatile uint8_t * pwm_channel, uint8_t input_number) {
-	uint8_t buf = *pwm_channel;
+static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number) {
+	uint16_t buf = *pwm_channel;
 
 	if(chk_inp(input_number)) {
-		if(buf < 0xFF) {
+		if(buf < 63) {
 			++buf;
 		}
 	}
@@ -81,7 +81,7 @@ static void fast_react_on_input(volatile uint8_t * pwm_channel, uint8_t input_nu
 	*pwm_channel = buf;
 }
 
-static void slow_react_on_input(volatile uint8_t * pwm_channel,
+static void slow_react_on_input(volatile uint16_t * pwm_channel,
 		uint8_t input_number, uint8_t every_which_step) {
 	static uint8_t step;
 

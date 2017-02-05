@@ -45,7 +45,7 @@
 
 
 // global declaration of PWMs' values to write
-extern volatile uint8_t pwms[];
+extern volatile uint16_t pwms[];
 
 // pwms initialization
 void pwms_init(uint16_t timer_prescaler, uint8_t divisor);
