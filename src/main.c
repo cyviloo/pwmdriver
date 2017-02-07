@@ -10,13 +10,27 @@
 #include "../include/inputs.h"
 #include "../include/pwms.h"
 
-#define PWM_STEP_DELAY_MS	2
+/*
+ * The time resolution of the main loop.
+ */
+#define PWM_STEP_DELAY_MS	3
+
+/*
+ * Time of stabilizing inputs.
+ */
 #define INPUT_ENSURE_MS		1
+
+/*
+ * Do we use slowened reaction function?
+ */
+#define USE_SLOW_REACT_INP	0
 
 
 static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number);
+#if USE_SLOW_REACT_INP > 0
 static void slow_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number,
 		uint8_t every_which_step);
+#endif
 static uint8_t (*input_activation_function)(uint8_t);
 
 
@@ -37,7 +51,6 @@ int main() {
 	while(1) {
 		fast_react_on_input(&pwms[0], 0);
 		fast_react_on_input(&pwms[1], 1);
-		slow_react_on_input(&pwms[2], 2, 5);
 
 		_delay_ms(PWM_STEP_DELAY_MS);
 	}
@@ -81,6 +94,7 @@ static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_n
 	*pwm_channel = buf;
 }
 
+#if USE_SLOW_REACT_INP > 0
 static void slow_react_on_input(volatile uint16_t * pwm_channel,
 		uint8_t input_number, uint8_t every_which_step) {
 	static uint8_t step;
@@ -90,3 +104,4 @@ static void slow_react_on_input(volatile uint16_t * pwm_channel,
 
 	++step;
 }
+#endif

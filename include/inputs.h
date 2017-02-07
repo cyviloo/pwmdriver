@@ -15,10 +15,10 @@
  * Inputs pins.
  */
 #define I0_CH		D
-#define I0_NO		0
+#define I0_NO		5
 
 #define I1_CH		D
-#define I1_NO		1
+#define I1_NO		6
 
 #define I2_CH		D
 #define I2_NO		2

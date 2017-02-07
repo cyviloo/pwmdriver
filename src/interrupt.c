@@ -22,17 +22,22 @@ volatile uint16_t pwms[PWM_CNT];
 #define PWM_STEPS	64
 
 // GAMMA SECTION
-static uint16_t gamma_correction_ram[PWM_STEPS];
 
+#if OCR_FROM_FLASH > 0
+#define GAMMA(a)  (pgm_read_word(&gamma_correction[a]))	 // macro
+#else
+static uint16_t gamma_correction_ram[PWM_STEPS];
 #define GAMMAP(a) (pgm_read_word(&gamma_correction[a]))  // macro
 #define GAMMA(a)  (gamma_correction_ram[a])  			 // macro
+#endif
+
 
 // ------ gamma    = 2,8
 const uint16_t gamma_correction[PWM_STEPS] PROGMEM = {
-		  0,  1,  1,  1,  1,  1,  2,  2,  3,  4,  6,  7,  9, 11, 13, 15, 18, 21,
-		 24, 27, 31, 35, 39, 44, 48, 53, 59, 64, 70, 76, 83, 90, 97,105,113,121,
-		129,138,148,157,167,178,189,200,211,223,236,248,262,275,289,304,318,334,
-		349,365,382,399,416,434,453,472,491,511
+		  0,  1,  1,  1,  1,  1,  1,  1,  1,  2,  3,  3,  5,  6,  7,  9, 10, 12,
+		 15, 17, 20, 23, 26, 29, 33, 37, 41, 46, 51, 56, 62, 68, 74, 81, 88, 96,
+		104,112,121,130,140,150,161,172,183,196,208,221,235,249,264,279,295,312,
+		329,346,365,384,403,423,444,466,488,511
 };
 
 
@@ -44,6 +49,7 @@ void timer0_init_for_pwms(uint16_t prescaler, uint8_t divisor) {
 
 	tcnt0_divisor = divisor;
 
+#if !OCR_FROM_FLASH
 	/*
 	 * by the way we fill the array in RAM,
 	 * maybe it's not a pretty solution, so it may be worth considering
@@ -51,6 +57,7 @@ void timer0_init_for_pwms(uint16_t prescaler, uint8_t divisor) {
 	 */
 	for(uint16_t i = 0; i < PWM_STEPS; ++i)
 		GAMMA(i) = GAMMAP(i);
+#endif
 
 	switch(prescaler) {
 	case 0:

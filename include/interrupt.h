@@ -9,6 +9,13 @@
 #define INCLUDE_PWMS_INTERRUPT_H_
 
 /*
+ * Do we read "ocr" values instantly from flash within the ISR?
+ * This operation is slower (since LPM is 3 cycles and LDS is 2 cycles)
+ * but consumes much less static RAM bytes.
+ */
+#define	OCR_FROM_FLASH	1
+
+/*
  * timer initialization for PWM purposes
  *
  * prescaler - value of the hardware prescaler for timer
