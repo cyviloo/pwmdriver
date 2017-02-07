@@ -8,18 +8,12 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include "../include/interrupt.h"
 #include "../include/macros.h"
+#include "../include/pwm_interrupt.h"
 #include "../include/pwms.h"
 
+
 volatile uint16_t pwms[PWM_CNT];
-
-
-// pwm resolution
-#define PWM_RES		512
-
-// pwm steps
-#define PWM_STEPS	64
 
 // GAMMA SECTION
 

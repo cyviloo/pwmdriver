@@ -21,13 +21,13 @@
 #define I1_NO		6
 
 #define I2_CH		D
-#define I2_NO		2
+#define I2_NO		7
 
 #define I3_CH		D
-#define I3_NO		3
+#define I3_NO		7
 
 #define I4_CH		D
-#define I4_NO		4
+#define I4_NO		7
 
 #define I5_CH		D
 #define I5_NO		5

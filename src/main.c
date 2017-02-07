@@ -7,24 +7,10 @@
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "../cfg.h"
 #include "../include/inputs.h"
 #include "../include/pwms.h"
-
-/*
- * The time resolution of the main loop.
- */
-#define PWM_STEP_DELAY_MS	3
-
-/*
- * Time of stabilizing inputs.
- */
-#define INPUT_ENSURE_MS		1
-
-/*
- * Do we use slowened reaction function?
- */
-#define USE_SLOW_REACT_INP	0
-
+#include "../include/spi.h"
 
 static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_number);
 #if USE_SLOW_REACT_INP > 0
@@ -37,7 +23,7 @@ static uint8_t (*input_activation_function)(uint8_t);
 int main() {
 
 	// init pwm with prescaler = 8
-	pwms_init(8, 5);
+	pwms_init(8, 4);
 
 	// init inputs
 	inputs_init();
@@ -45,12 +31,22 @@ int main() {
 	// register inputs activation function
 	input_activation_function = isActivated;
 
+	// init software SPI
+	SPI_initialization(falling);
+	PORTD |= (1 << 2) | (1 << 3);
+
+	// needed variables
+	uint8_t pwm_val, pwm_out;
+
 	// enable global interrupts
 	sei();
 
 	while(1) {
 		fast_react_on_input(&pwms[0], 0);
 		fast_react_on_input(&pwms[1], 1);
+
+		get_pwm_from_spi(&pwm_val, &pwm_out);
+			pwms[pwm_out + 2] = pwm_val;
 
 		_delay_ms(PWM_STEP_DELAY_MS);
 	}
@@ -82,7 +78,7 @@ static void fast_react_on_input(volatile uint16_t * pwm_channel, uint8_t input_n
 	uint16_t buf = *pwm_channel;
 
 	if(chk_inp(input_number)) {
-		if(buf < 63) {
+		if(buf < PWM_STEPS - 1) {
 			++buf;
 		}
 	}

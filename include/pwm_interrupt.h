@@ -24,4 +24,5 @@
  */
 void timer0_init_for_pwms(uint16_t prescaler, uint8_t divisor);
 
+
 #endif /* INCLUDE_PWMS_INTERRUPT_H_ */

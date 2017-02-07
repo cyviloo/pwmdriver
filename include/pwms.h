@@ -10,6 +10,12 @@
 
 #include "../cfg.h"
 
+// pwm resolution
+#define PWM_RES		512
+
+// pwm steps
+#define PWM_STEPS	64
+
 /*
  * Software PWM pins configuration
  */

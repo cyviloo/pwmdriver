@@ -6,9 +6,9 @@
  */
 
 #include <avr/io.h>
-#include "../include/interrupt.h"
 #include "../include/macros.h"
 #include "../include/pwms.h"
+#include "../include/pwm_interrupt.h"
 
 void pwms_init(uint16_t timer_prescaler, uint8_t divisor) {
 

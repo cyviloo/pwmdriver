@@ -30,5 +30,19 @@
  */
 #define TRIGGER_MODE	0
 
+/*
+ * The time resolution of the main loop.
+ */
+#define PWM_STEP_DELAY_MS	3
+
+/*
+ * Time of stabilizing inputs.
+ */
+#define INPUT_ENSURE_MS		1
+
+/*
+ * Do we use slowened reaction function?
+ */
+#define USE_SLOW_REACT_INP	0
 
 #endif /* CFG_H_ */
