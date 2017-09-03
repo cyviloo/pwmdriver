@@ -22,6 +22,9 @@ static uint8_t (*input_activation_function)(uint8_t);
 
 int main() {
 
+	// initial delay so another devices can init their SPI
+	_delay_ms(200);
+
 	// init pwm with prescaler = 8
 	pwms_init(8, 4);
 
