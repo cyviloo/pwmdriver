@@ -45,6 +45,19 @@
 #define I9_NO		1
 
 
+// functions
+
+/*
+ * initialization
+ */
+void inputs_init();
+
+/*
+ * get state of a particular input
+ */
+uint8_t isActivated(uint8_t number);
+
+
 // macros
 
 #if TRIGGER_MODE > 0
@@ -96,19 +109,5 @@
 #define I9A		( !(PIN(I9_CH) & (1 << I9_NO)) )
 
 #endif
-
-// functions
-
-/*
- * initialization
- */
-void inputs_init();
-
-
-/*
- * get state of a particular input
- */
-uint8_t isActivated(uint8_t number);
-
 
 #endif /* INCLUDE_INPUTS_H_ */
