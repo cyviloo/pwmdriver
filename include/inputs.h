@@ -49,16 +49,16 @@
 
 #if TRIGGER_MODE > 0
 
-#define I0H		PORT(I0_CH) |= ~(1 << I0_NO)
-#define I1H		PORT(I1_CH) |= ~(1 << I1_NO)
-#define I2H		PORT(I2_CH) |= ~(1 << I2_NO)
-#define I3H		PORT(I3_CH) |= ~(1 << I3_NO)
-#define I4H		PORT(I4_CH) |= ~(1 << I4_NO)
-#define I5H		PORT(I5_CH) |= ~(1 << I5_NO)
-#define I6H		PORT(I6_CH) |= ~(1 << I6_NO)
-#define I7H		PORT(I7_CH) |= ~(1 << I7_NO)
-#define I8H		PORT(I8_CH) |= ~(1 << I8_NO)
-#define I9H		PORT(I9_CH) |= ~(1 << I9_NO)
+#define I0H		PORT(I0_CH) &= ~(1 << I0_NO)
+#define I1H		PORT(I1_CH) &= ~(1 << I1_NO)
+#define I2H		PORT(I2_CH) &= ~(1 << I2_NO)
+#define I3H		PORT(I3_CH) &= ~(1 << I3_NO)
+#define I4H		PORT(I4_CH) &= ~(1 << I4_NO)
+#define I5H		PORT(I5_CH) &= ~(1 << I5_NO)
+#define I6H		PORT(I6_CH) &= ~(1 << I6_NO)
+#define I7H		PORT(I7_CH) &= ~(1 << I7_NO)
+#define I8H		PORT(I8_CH) &= ~(1 << I8_NO)
+#define I9H		PORT(I9_CH) &= ~(1 << I9_NO)
 
 #define I0A		(  (PIN(I0_CH) & (1 << I0_NO)) )
 #define I1A		(  (PIN(I1_CH) & (1 << I1_NO)) )
